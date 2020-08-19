@@ -33,6 +33,28 @@ function App() {
 }
 ```
 
+### 完成形
+
+```
+import { FaReact } from 'react-icons/fa';
+import { IconContext } from 'react-icons';
+import { MdAlarm } from 'react-icons/md';
+import React from 'react';
+
+function App() {
+  return (
+    <IconContext.Provider value={{ color: 'blue', size: '5rem' }}>
+      <div className="App">
+        <FaReact />
+        <MdAlarm color="purple" size="10rem" />
+      </div>
+    </IconContext.Provider>
+  );
+}
+
+export default App;
+```
+
 ## react-toast-notifications
 
 ### set up
@@ -74,7 +96,7 @@ function App() {
 export default App;
 ```
 
-### positoin の位置を指定
+### position の位置を指定
 
 - 6 つの位置を指定できる
 - position は`toast関数`の第二引数に object で指定
@@ -148,7 +170,7 @@ toast.warn(<CustomToast />, {
 });
 ```
 
-完成形
+### 完成形
 
 ```
 import 'react-toastify/dist/ReactToastify.css';
@@ -189,6 +211,137 @@ function App() {
   return (
     <div className="App">
       <button onClick={notify}>Notify !</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+## react-modal
+
+### set up
+
+- [公式「react-modal」](http://reactcommunity.org/react-modal/)
+
+```
+$ yarn add react-modal
+```
+
+### basic
+
+- `react-modal`から`Modal`コンポーネントを import
+- `Modal`コンポーネントの chidlren に modal の contents を設定
+- `Modal`コンポーネントの`isOpen`props で`true`にすると modal が表示される
+
+```
+import Modal from 'react-modal';
+import React from 'react';
+
+function App() {
+  return (
+    <div className="App">
+      <Modal isOpen={true}>
+        <h2>Modal title</h2>
+        <div>Modal Body</div>
+      </Modal>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### button を押下して modal を表示/非表示を制御
+
+- `useState`で`isOpen`を制御
+
+```
+import React, { useState } from 'react';
+
+const [modalIsOpen, setModalIsOpen] = useState(false);
+
+<button onClick={() => setModalIsOpen(true)}>Open modal</button>
+<Modal isOpen={modalIsOpen}>
+```
+
+### modal の背景(オーバーレイ)を押下時の制御
+
+- `Modal`コンポーネントの`onRequestClose`props で制御
+- キーボードの`esc`キー押下で modal が非表示になる
+- `Modal`コンポーネントの`shouldCloseOnOverlayClick`props を false にすると背景(オーバーレイ)を押下しても modal が非表示にならない
+
+```
+const [modalIsOpen, setModalIsOpen] = useState(false);
+
+<Modal
+  isOpen={modalIsOpen}
+  onRequestClose={() => setModalIsOpen(false)}
+  shouldCloseOnOverlayClick={false}
+>
+```
+
+### console エラー回避
+
+- modal を表示させると`Warning: react-modal: App element is not defined. Please use Modal.setAppElement(el) or set appElement={el}. This is needed so screen readers don't see main content when modal is opened. It is not recommended, but you can opt-out by setting ariaHideApp={false}.`と console エラーが表示される
+- modal の root コンポーネントの id を`setAppElement`に指定
+
+```
+Modal.setAppElement('#root');
+```
+
+### style 指定
+
+- `Modal`コンポーネントの`style`props で指定
+- 公式の[Styles について説明ページ](http://reactcommunity.org/react-modal/styles/)
+
+```
+<Modal
+  style={{
+    overlay: {
+      backgroundColor: 'grey',
+    },
+    content: {
+      color: 'orange',
+    },
+  }}
+>
+```
+
+### 完成形
+
+```
+import React, { useState } from 'react';
+
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');
+
+function App() {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  return (
+    <div className="App">
+      <button onClick={() => setModalIsOpen(true)}>Open modal</button>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        shouldCloseOnOverlayClick={false}
+        style={{
+          overlay: {
+            backgroundColor: 'grey',
+          },
+          content: {
+            color: 'orange',
+          },
+        }}
+      >
+        <h2>Modal title</h2>
+        <div>Modal Body</div>
+        <div>
+          <button onClick={() => setModalIsOpen(false)}>Close</button>
+        </div>
+      </Modal>
     </div>
   );
 }
