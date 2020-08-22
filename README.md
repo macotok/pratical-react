@@ -361,8 +361,8 @@ $ yarn add @tippyjs/react
 
 ### basic
 
-- react 用の`tippyjs`を読み込む
-- `tippy.js`の css を読み込む
+- react 用の`tippyjs`を import
+- `tippy.js`の css を import
 - button タグを`Tippy`コンポーネントで wrap する
 - `Tippy`コンポーネントの`content`props に tooltip に表示する contents を設定
 
@@ -494,7 +494,7 @@ $ yarn add react-countup
 
 ### basic
 
-- `react-countup`から`CountUp`コンポーネントを読み込む
+- `react-countup`から`CountUp`コンポーネントを import
 - `CountUp`コンポーネントの`end`props にアニメーションが stop する数字を設定
 
 ```
@@ -530,7 +530,7 @@ function App() {
 
 ### useCountUp で countup を操作
 
-- `react-countup`から`useCountUp`hook を読み込む
+- `react-countup`から`useCountUp`hook を import
 - `useCountUp`関数の引数 object に`duration`、`end`を設定
 - `useCountUp`の変数の分割代入で`countUp`, `start`, `pauseResume`, `reset`, `update`を取得。それらで countup を操作
   - `countUp`はカウント数
@@ -609,7 +609,7 @@ $ yarn add react-idle-timer
 
 ### basic
 
-- `react-idle-timer`から`IdleTimer`コンポーネントを読み込む
+- `react-idle-timer`から`IdleTimer`コンポーネントを import
 - `IdleTimer`コンポーネント
   - `ref`props に react の hook`useRef`を設定
   - `timeout`props に timer の`milliseconds`を設定
@@ -759,4 +759,95 @@ function IdleTimerContainer() {
 }
 
 export default IdleTimerContainer;
+```
+
+## color-picker
+
+### set up
+
+- [公式サイト「react-color」](https://casesandberg.github.io/react-color/)
+
+```
+$ yarn add react-color
+```
+
+### basic
+
+- `react-color`から`ChromePicker`コンポーネントを import
+- useState で抽出した color を制御
+- `ChromePicker`コンポーネント
+  - props`color`に抽出した color を設定
+  - `onChage属性`で抽出した color を取得(hex を取得)
+
+```
+import './App.css';
+
+import React, { useState } from 'react';
+
+import { ChromePicker } from 'react-color';
+
+function App() {
+  const [color, setColor] = useState('#fff');
+  return (
+    <div>
+      <ChromePicker
+        color={color}
+        onChange={(updatedColor) => setColor(updatedColor.hex)}
+      />
+      <h2>You picked {color}</h2>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### advanced
+
+- button を押下して color picker の表示非表示を制御
+
+```
+const [showColorPicker, setShowColorPicker] = useState(false);
+
+<button
+  onClick={() =>
+    setShowColorPicker((showColorPicker) => !showColorPicker)
+  }
+>
+  {showColorPicker ? 'Close color picker' : 'Pick a color'}
+</button>
+```
+
+### 完成形
+
+```
+import React, { useState } from 'react';
+
+import { ChromePicker } from 'react-color';
+
+function App() {
+  const [color, setColor] = useState('#fff');
+  const [showColorPicker, setShowColorPicker] = useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          setShowColorPicker((showColorPicker) => !showColorPicker)
+        }
+      >
+        {showColorPicker ? 'Close color picker' : 'Pick a color'}
+      </button>
+      {showColorPicker && (
+        <ChromePicker
+          color={color}
+          onChange={(updatedColor) => setColor(updatedColor.hex)}
+        />
+      )}
+      <h2>You picked {color}</h2>
+    </div>
+  );
+}
+
+export default App;
 ```
