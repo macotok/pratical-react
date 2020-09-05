@@ -38,6 +38,7 @@ function App() {
         postsPerPage={postsPerPage}
         totalPosts={posts.length}
         paginate={paginate}
+        currentPage={currentPage}
       />
     </div>
   );

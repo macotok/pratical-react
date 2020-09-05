@@ -1671,6 +1671,32 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
 <Pagination paginate={paginate} />
 ```
 
+### 次へと前へのボタンを追加
+
+- currentPage を取得して先頭ページ以外には`前へ`ボタン、最後ページ以外には`次へ`ボタンを表示
+- currentPage を更新
+
+```
+const PrevPage = () => (
+  <li>
+    <a href="#" onClick={() => paginate(currentPage - 1)}>
+      前へ
+    </a>
+  </li>
+);
+
+const NextPage = () => (
+  <li>
+    <a href="#" onClick={() => paginate(currentPage + 1)}>
+      次へ
+    </a>
+  </li>
+);
+
+{currentPage !== 1 ? <PrevPage /> : null}
+{currentPage !== pageNumbers ? <NextPage /> : null}
+```
+
 ### 完成
 
 app.js
@@ -1714,6 +1740,7 @@ function App() {
         postsPerPage={postsPerPage}
         totalPosts={posts.length}
         paginate={paginate}
+        currentPage={currentPage}
       />
     </div>
   );
@@ -1753,24 +1780,59 @@ import React from 'react';
 import _ from 'lodash';
 
 const Pagination = (props) => {
-  const { postsPerPage, totalPosts, paginate } = props;
+  const { postsPerPage, totalPosts, paginate, currentPage } = props;
   const pageNumbers = Math.ceil(totalPosts / postsPerPage);
 
+  const PrevPage = () => (
+    <li className="page-item">
+      <a
+        href="#"
+        onClick={() => paginate(currentPage - 1)}
+        className="page-link"
+      >
+        前へ
+      </a>
+    </li>
+  );
+
+  const NextPage = () => (
+    <li className="page-item">
+      <a
+        href="#"
+        onClick={() => paginate(currentPage + 1)}
+        className="page-link"
+      >
+        次へ
+      </a>
+    </li>
+  );
+
+  const isCurentPage = (pageNumber) =>
+    pageNumber === currentPage ? 'active' : null;
+
   return (
-    <nav>
-      <ul>
-        {_.range(1, pageNumbers + 1).map((pageNumber) => (
-          <li key={pageNumber}>
-            <a
-              href="#"
-              onClick={() => paginate(pageNumber)}
+    <>
+      <nav>
+        <ul className="pagination">
+          {currentPage !== 1 ? <PrevPage /> : null}
+          {_.range(1, pageNumbers + 1).map((pageNumber) => (
+            <li
+              key={pageNumber}
+              className={`page-item ${isCurentPage(pageNumber)}`}
             >
-              {pageNumber}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+              <a
+                href="#"
+                onClick={() => paginate(pageNumber)}
+                className="page-link"
+              >
+                {pageNumber}
+              </a>
+            </li>
+          ))}
+          {currentPage !== pageNumbers ? <NextPage /> : null}
+        </ul>
+      </nav>
+    </>
   );
 };
 
