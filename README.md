@@ -1838,3 +1838,196 @@ const Pagination = (props) => {
 
 export default Pagination;
 ```
+
+## reaflet
+
+### set up
+
+- map ライブラリ
+- [react-leaflet](https://react-leaflet.js.org/)と[leaflet](https://leafletjs.com/)を install
+
+```
+$ yarn add react-leaflet
+$ yarn add leaflet
+```
+
+### basic
+
+- `react-leaflet`から`Map`、`TileLayer`コンポーネントを import
+- `Map`コンポーネントの props`center`、`zoom`を設定
+  - `center`は map の起点となる位置
+  - `zoom`は拡大縮小値
+- `leaflet`の css を読み込む
+
+```
+import { Map, TileLayer } from 'react-leaflet';
+
+<Map center={[45.4, -75.7]} zoom={12}>
+  <TileLayer
+    attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+</Map>
+```
+
+```
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""
+/>
+```
+
+### Marker
+
+- `react-leaflet`から`Marker`コンポーネントを import して地図に Marker をつける
+- 複数に Marker をつけることができる。その場合は`key`を設定
+- props`position`で経度と緯度を指定
+
+```
+import * as parkData from './data/skateboard-parks.json';
+import { Map, Marker, TileLayer } from 'react-leaflet';
+
+<Map center={[45.4, -75.7]} zoom={12}>
+  <TileLayer
+    attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+  {parkData.features.map((park) => (
+    <Marker
+      key={park.properties.PARK_ID}
+      position={[
+        park.geometry.coordinates[1],
+        park.geometry.coordinates[0],
+      ]}
+    />
+  ))}
+</Map>
+```
+
+### Popup
+
+- `react-leaflet`から`Popup`コンポーネントを import
+- useState で`Marker`を押下したときに Popup が表示、また非表示を制御
+- `Popup`コンポーネントの`children`にコンテンツを設定
+
+```
+import * as parkData from './data/skateboard-parks.json';
+
+import { Marker, Popup } from 'react-leaflet';
+import React, { useState } from 'react';
+
+const [activePark, setActivePark] = useState(null);
+
+{parkData.features.map((park) => (
+  <Marker
+    key={park.properties.PARK_ID}
+    position={[
+      park.geometry.coordinates[1],
+      park.geometry.coordinates[0],
+    ]}
+    onclick={() => {
+      setActivePark(park);
+    }}
+  />
+))}
+
+{activePark && (
+  <Popup
+    position={[
+      activePark.geometry.coordinates[1],
+      activePark.geometry.coordinates[0],
+    ]}
+    onClose={() => {
+      setActivePark(null);
+    }}
+  >
+    <div>
+      <h2>{activePark.properties.NAME}</h2>
+      <p>{activePark.properties.DESCRIPTIO}</p>
+    </div>
+  </Popup>
+)}
+```
+
+### Icon
+
+- `leaflet`から`Icon`Class を import
+  - プロパティに`iconUrl`、`iconSize`を指定
+- `Marker`コンポーネントの props`icon`に指定
+
+```
+import { Marker } from 'react-leaflet';
+import { Icon } from 'leaflet';
+
+const icon = new Icon({
+  iconUrl: '/skateboarding.svg',
+  iconSize: [25, 25],
+});
+
+<Marker icon={icon} />
+```
+
+### 完成形
+
+```
+import './App.css';
+
+import * as parkData from './data/skateboard-parks.json';
+
+import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
+import React, { useState } from 'react';
+
+import { Icon } from 'leaflet';
+
+const icon = new Icon({
+  iconUrl: '/skateboarding.svg',
+  iconSize: [25, 25],
+});
+
+function App() {
+  const [activePark, setActivePark] = useState(null);
+
+  return (
+    <Map center={[45.4, -75.7]} zoom={12}>
+      <TileLayer
+        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {parkData.features.map((park) => (
+        <Marker
+          key={park.properties.PARK_ID}
+          position={[
+            park.geometry.coordinates[1],
+            park.geometry.coordinates[0],
+          ]}
+          onclick={() => {
+            setActivePark(park);
+          }}
+          icon={icon}
+        />
+      ))}
+
+      {activePark && (
+        <Popup
+          position={[
+            activePark.geometry.coordinates[1],
+            activePark.geometry.coordinates[0],
+          ]}
+          onClose={() => {
+            setActivePark(null);
+          }}
+        >
+          <div>
+            <h2>{activePark.properties.NAME}</h2>
+            <p>{activePark.properties.DESCRIPTIO}</p>
+          </div>
+        </Popup>
+      )}
+    </Map>
+  );
+}
+
+export default App;
+```
