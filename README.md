@@ -1839,10 +1839,11 @@ const Pagination = (props) => {
 export default Pagination;
 ```
 
-## reaflet
+## leaflet
 
 ### set up
 
+- [React-Leaflet demo](https://www.youtube.com/watch?v=290VgjkLong)を元に制作
 - map ライブラリ
 - [react-leaflet](https://react-leaflet.js.org/)と[leaflet](https://leafletjs.com/)を install
 
@@ -2031,3 +2032,133 @@ function App() {
 
 export default App;
 ```
+
+## react-leaflet with swr
+
+- [React-Leaflet demo](https://www.youtube.com/watch?v=290VgjkLong)を元に制作
+
+### SWR とは
+
+- useSWR は外部 API からのデータ取得、ローディング状態、エラーが発生した時をシンプルに記述できます。
+- useSWR は第二引数で与えた fetcher が一度取得したデータをクライアント側でキャッシュしてくれます。これで、API を通じて取得したデータを store に格納せずに済むのです。
+- useSWR がキャッシュからデータを取得する流れは以下です。
+  - キャッシュからデータを返そうとする（Stale）
+  - キャッシュにデータがなければ、データを取得する
+  - キャッシュにデータがあれば、再度データを取得してキャッシュを更新する（Revalidate）
+- useSWR はデフォルトで Revalidate に関する嬉しい機能を備えています。Revalidate は（データ取得+キャッシュ更新）を意味します。
+  - ブラウザをクリックしたり、タブを移動して戻ってきたときに Revalidate する（Focus Revalidation）
+  - 指定した時間ごとに Revalidate する（polling ができる）
+  - mutate 関数を使ってデータ更新時にキャッシュも更新できる（Local mutation）
+  - 無限スクロールの場合、ページ遷移後もスクロール位置を保存する
+  - エラー時にリトライしてくれる
+  - タイムアウトの設定が簡単
+- useSWR は SSR で利用できる
+- useSWR は GraphQL に対応している
+
+### set up
+
+- [公式サイト「SWR」](https://swr.vercel.app/)
+
+```
+$ yarn add swr
+```
+
+### basic
+
+- `swr`から`useSwr`を import
+- `useSwr`の第一引数は API の URL、第二引数は fetch 処理を設定
+- `useSwr`の返り値として`data`、`error`が返ってくる
+
+```
+import useSwr from 'swr';
+
+const url = 'https://data.police.uk/api/crimes-street/all-crime?lat=52.629729&lng=-1.131592&date=2019-10';
+const { data, error } = useSwr(url, { fetcher });
+
+const crimes = data && !error ? data.slice(0, 10) : [];
+
+{crimes.map((crime) => (
+  <Marker
+    key={crime.id}
+    position={[crime.location.latitude, crime.location.longitude]}
+  />
+))}
+```
+
+### 完成形
+
+- Icon をデータによって変更できるように設定
+
+```
+import './App.css';
+
+import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
+import React, { useState } from 'react';
+
+import L from 'leaflet';
+import useSwr from 'swr';
+
+const Icon = new L.Icon({
+  iconUrl: '',
+  iconSize: [25, 25],
+});
+
+const fetcher = (...args) => fetch(...args).then((response) => response.json());
+
+function App() {
+  const [activeCrime, setActiveCrime] = useState(null);
+
+  const url =
+    'https://data.police.uk/api/crimes-street/all-crime?lat=52.629729&lng=-1.131592&date=2019-10';
+  const { data, error } = useSwr(url, { fetcher });
+
+  const crimes = data && !error ? data.slice(0, 10) : [];
+
+  return (
+    <Map center={[52.631438, -1.134658]} zoom={12}>
+      <TileLayer
+        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {crimes.map((crime) => {
+        Icon.options.iconUrl =
+          'https://cdn.pixabay.com/photo/2020/06/26/17/16/daisies-5343423_960_720.jpg';
+
+        return (
+          <Marker
+            key={crime.id}
+            position={[crime.location.latitude, crime.location.longitude]}
+            onclick={() => {
+              setActiveCrime(crime);
+            }}
+            icon={Icon}
+          />
+        );
+      })}
+
+      {activeCrime && (
+        <Popup
+          position={[
+            activeCrime.location.latitude,
+            activeCrime.location.longitude,
+          ]}
+          onClose={() => {
+            setActiveCrime(null);
+          }}
+        >
+          <div>
+            <h2>{activeCrime.location.street.name}</h2>
+            <p>{activeCrime.category}</p>
+          </div>
+        </Popup>
+      )}
+    </Map>
+  );
+}
+
+export default App;
+```
+
+### 参考サイト
+
+- [【React】useSWR は API からデータ取得をする快適な React Hooks だと伝えたい](https://panda-program.com/posts/useswr)
