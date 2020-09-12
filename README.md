@@ -1,5 +1,9 @@
 # pratical-react
 
+- [Practical React ](https://www.youtube.com/watch?v=LZhwNGpiTEI)を元に制作
+- [Simple Frontend Pagination | React](https://www.youtube.com/watch?v=IYCa1F-OWmk)を元に制作
+- [React-Leaflet demo](https://www.youtube.com/watch?v=290VgjkLong)を元に制作
+
 ## react-icons
 
 ### set up
@@ -1843,7 +1847,6 @@ export default Pagination;
 
 ### set up
 
-- [React-Leaflet demo](https://www.youtube.com/watch?v=290VgjkLong)を元に制作
 - map ライブラリ
 - [react-leaflet](https://react-leaflet.js.org/)と[leaflet](https://leafletjs.com/)を install
 
@@ -2034,8 +2037,6 @@ export default App;
 ```
 
 ## react-leaflet with swr
-
-- [React-Leaflet demo](https://www.youtube.com/watch?v=290VgjkLong)を元に制作
 
 ### SWR とは
 
