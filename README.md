@@ -15,3 +15,4 @@
 - [react-charts](./function_description/react-charts.md)
 - [react-pagination](./function_description/react-pagination.md)
 - [react-leaflet](./function_description/react-leaflet.md)
+- [react-infinite-scroll](./function_description/react-infinite-scroll.md)
