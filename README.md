@@ -16,3 +16,4 @@
 - [react-pagination](./function_description/react-pagination.md)
 - [react-leaflet](./function_description/react-leaflet.md)
 - [react-infinite-scroll](./function_description/react-infinite-scroll.md)
+- [react-sidebar](./function_description/react-sidebar.md)
